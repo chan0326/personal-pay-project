@@ -36,7 +36,7 @@ export default function Payment({ params }: any) {
   }, []);
 
   const requestPay = async () => {
-    window.IMP.init('imp68704784'); // Iamport 가맹점 식별코드
+    window.IMP.init(process.env.NEXT_PUBLIC_IAMPORT_API_KEY); // Iamport 가맹점 식별코드
 
     window.IMP.request_pay(
       {

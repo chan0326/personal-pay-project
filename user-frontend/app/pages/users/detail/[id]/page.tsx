@@ -10,47 +10,49 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 export default function UserMyPage({ params }: any) {
-    const dispatch = useDispatch()
-    const user: IUser = useSelector(getUserById)
-    const payments: IPayment[] = useSelector(getPaymentsById)
+    const dispatch = useDispatch();
+    const user: IUser = useSelector(getUserById);
+    const payments: IPayment[] = useSelector(getPaymentsById);
     const [showPayments, setShowPayments] = useState(false);
     const [allEvents, setAllEvents] = useState<IPayment[]>([]);
 
-
     const handleDelete = () => {
-        alert("삭제완료")
-        userDeleteById(user.id)
-    }
+        alert("삭제완료");
+        userDeleteById(user.id);
+    };
 
     const handleShowPayments = () => {
-        dispatch(findPaymentsByUserId(params.id))
-            .then((data: any) => {
-                if (Array.isArray(data.payload)) {
-                    setShowPayments(true);
-                    setAllEvents(data.payload);
-                } else {
-                    console.error('Error: fetched events are not an array:', data.payload);
-                }
+        if (showPayments) {
+            setShowPayments(false);
+        } else {
+            dispatch(findPaymentsByUserId(params.id))
+                .then((data: any) => {
+                    if (Array.isArray(data.payload)) {
+                        setShowPayments(true);
+                        setAllEvents(data.payload);
+                    } else {
+                        console.error('Error: fetched events are not an array:', data.payload);
+                    }
+                })
+                .catch((error: any) => {
+                    console.error('Error fetching events:', error);
+                });
+        }
+    };
+
+    const handleShowRefundPayments = (payment: IPayment) => {
+        dispatch(refundPayment(payment))
+            .then((res: any) => {
+                alert('환불 완료');
             })
-            .catch((error: any) => {
-                console.error('Error fetching events:', error);
-            });     
-    }
-    const handleShowrefundPayments = (payment:IPayment) => {
-        dispatch((refundPayment(payment)))
-        .then((res: any) => {
-            alert('환불 완료')
-           
-          })
-          .catch((err: any) => {
-            console.log("환불 실패")
-          });
-        
-    }
+            .catch((err: any) => {
+                console.log("환불 실패");
+            });
+    };
 
     useEffect(() => {
-        dispatch(findUserById(params.id))
-    }, [params.id, dispatch])
+        dispatch(findUserById(params.id));
+    }, [params.id, dispatch]);
 
     return (
         <>
@@ -71,7 +73,7 @@ export default function UserMyPage({ params }: any) {
                 onClick={handleShowPayments}
                 className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
             >
-                결제내역보기
+                {showPayments ? '결제내역 숨기기' : '결제내역보기'}
             </button>
             <a
                 href="#"
@@ -79,7 +81,7 @@ export default function UserMyPage({ params }: any) {
             >
                 목록보기
                 <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12M5 1l4 4-4 4"/>
+                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12M5 1l4 4-4 4" />
                 </svg>
             </a>
             {showPayments && (
@@ -90,7 +92,7 @@ export default function UserMyPage({ params }: any) {
                             <li key={payment.id}>
                                 <Typography>{payment.paymentDate} - {payment.paymentUid} - {payment.amount}원 
                                     <button
-                                        onClick={() => handleShowrefundPayments(payment)}
+                                        onClick={() => handleShowRefundPayments(payment)}
                                         className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                                     >
                                         환불

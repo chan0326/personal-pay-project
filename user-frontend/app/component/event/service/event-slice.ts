@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { IEvent } from "../model/event"
-import { SaveEvent, findEventById } from "./event-service"
+import { AddEvent, SaveEvent, findEventById } from "./event-service"
 import { initialState } from "./event-init"
 
 const status = {
@@ -26,6 +26,7 @@ export const eventSlice = createSlice({
         builder
                .addCase(SaveEvent.fulfilled, (state: any, {payload}: any)=>{state.message= payload})
                .addCase(findEventById.fulfilled, (state: any, { payload }: any) => { state.json = payload })
+               .addCase(AddEvent.fulfilled, (state: any, { payload }: any) => { state.message = payload })
         
     }
 })

@@ -32,4 +32,6 @@ public interface CalendarService extends CommandService<CalendarDto> , QueryServ
     MessengerVo save(List<CalendarDto> calendarDtos);
 
     List<CalendarDto> getCalendarByUserId(Long userId);
+
+    MessengerVo add(CalendarDto dto);
 }

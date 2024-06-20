@@ -9,6 +9,7 @@ import { IUser } from "@/app/component/user/model/user";
 import { parseCookies, setCookie } from "nookies";
 import { jwtDecode } from "jwt-decode";
 import { PG } from "@/app/component/common/enums/PG";
+import { AddEvent, SaveEvent } from "@/app/component/event/service/event-service";
 
 
 export default function Login() {
@@ -16,11 +17,13 @@ export default function Login() {
     const dispatch = useDispatch();
     const auth = useSelector(getAuth);
     const PasswordRef = useRef<HTMLInputElement>(null);
+   
 
     const [user, setUser] = useState({} as IUser)
     const [idCheck, setIdCheck] = useState('')
     const [isPwCheck, setIsPwCheck] = useState('')
     const IsWrongId = useSelector(getExistsId)
+    
 
     const handleUsername = (e: any) => {
         setUser({ ...user, username: e.target.value })
@@ -44,6 +47,7 @@ export default function Login() {
                                 console.log('서버에서 넘어온 메세지 ' + parseCookies().message)
                                 console.log('서버에서 넘어온 토큰 ' + parseCookies().accessToken)
                                 console.log("토큰을 jwtDecode(언박싱)한 내용" + JSON.stringify(jwtDecode<any>(parseCookies().accessToken)))
+
                                 router.push(`${PG.HOME}`)
                                 router.refresh()
                             } else {

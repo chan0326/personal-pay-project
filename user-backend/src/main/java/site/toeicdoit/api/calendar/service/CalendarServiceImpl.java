@@ -10,8 +10,10 @@ import site.toeicdoit.api.calendar.model.CalendarDto;
 import site.toeicdoit.api.calendar.model.CalendarModel;
 import site.toeicdoit.api.calendar.repository.CalendarRepository;
 import site.toeicdoit.api.common.component.MessengerVo;
+import site.toeicdoit.api.common.proxy.DateProxy;
 import site.toeicdoit.api.user.model.UserModel;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +22,37 @@ import java.util.stream.Collectors;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class CalendarServiceImpl implements CalendarService{
+public class CalendarServiceImpl implements CalendarService {
 
     private final CalendarRepository repo;
 
+    private boolean isDuplicate(CalendarDto dto) {
+        return repo.existsByTitleAndAllDayAndStartAndUserId(
+                dto.getTitle(),
+                dto.isAllDay(),
+                dto.getStart(),
+                UserModel.builder().id(dto.getUserId()).build()
+        );
+    }
 
 
+    @Override
+    public MessengerVo add(CalendarDto dto) {
+        log.info("CalendarDto save con: {}", dto);
+        // 중복 데이터 확인
+        Optional<CalendarModel> existingCalendar = repo.findByTitleAndStartAndUserId(dto.getTitle(), dto.getStart(), UserModel.builder().id(dto.getUserId()).build());
+        if (existingCalendar.isPresent()) {
+            return MessengerVo.builder()
+                    .message("FAILURE: Already exists")
+                    .build();
+        }
+
+        // 중복이 아닐 경우 데이터 저장
+        repo.save(dtoToEntity(dto));
+        return MessengerVo.builder()
+                .message("SUCCESS")
+                .build();
+    }
 
     @Transactional
     @Override
@@ -57,14 +84,6 @@ public class CalendarServiceImpl implements CalendarService{
                 .build();
     }
 
-    private boolean isDuplicate(CalendarDto dto) {
-        return repo.existsByTitleAndAllDayAndStartAndUserId(
-                dto.getTitle(),
-                dto.isAllDay(),
-                dto.getStart(),
-                UserModel.builder().id(dto.getUserId()).build()
-        );
-    }
 
     @Override
     public MessengerVo save(CalendarDto calendarDto) {

@@ -10,6 +10,7 @@ import site.toeicdoit.api.calendar.model.CalendarDto;
 import site.toeicdoit.api.calendar.service.CalendarService;
 import site.toeicdoit.api.calendar.service.CalendarServiceImpl;
 import site.toeicdoit.api.common.component.MessengerVo;
+import site.toeicdoit.api.user.model.UserModel;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +27,12 @@ public class CalendarController {
     public ResponseEntity<MessengerVo> save(@RequestBody List<CalendarDto> event) {
         log.info("CalendarDto save con: {}", event);
         return ResponseEntity.ok(calendarService.save(event));
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<MessengerVo> add(@RequestBody CalendarDto dto) {
+        log.info("CalendarDto save con: {}", dto);
+        return ResponseEntity.ok(calendarService.add(dto));
     }
 
 

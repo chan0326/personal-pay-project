@@ -11,9 +11,9 @@ import java.util.Collection;
 import java.util.List;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<PaymentModel, Long>{
+public interface PaymentRepository extends JpaRepository<PaymentModel, Long> , PaymentDao{
 
 
-    @Query("select p from payments p where p.userId.id = :userId ORDER BY p.id desc")
-    List<PaymentModel> getPaymentByUserId(@Param("userId") Long userId);
+//    @Query("select p from payments p where p.userId.id = :userId ORDER BY p.id desc")
+//    List<PaymentModel> getPaymentByUserId(@Param("userId") Long userId);
 }

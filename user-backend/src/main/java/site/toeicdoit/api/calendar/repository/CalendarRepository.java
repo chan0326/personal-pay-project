@@ -11,13 +11,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CalendarRepository extends JpaRepository<CalendarModel, Long> {
+public interface CalendarRepository extends JpaRepository<CalendarModel, Long> , CalendarDao{
 
 
-    @Query("select c from calendars c where c.userId.id = :userId")
-    List<CalendarModel> getCalendarByUserId(@Param("userId") Long userId);
+//    @Query("select c from calendars c where c.userId.id = :userId")
+//    List<CalendarModel> getCalendarByUserId(@Param("userId") UserModel userId);
 
     boolean existsByTitleAndAllDayAndStartAndUserId(String title, boolean allDay, String start, UserModel userId);
 
     List<CalendarModel> findByUserId(UserModel userId);
+
+
+    Optional<CalendarModel> findByTitleAndStartAndUserId(String title, String start, UserModel userId);
 }

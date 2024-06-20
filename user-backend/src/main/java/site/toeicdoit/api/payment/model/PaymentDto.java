@@ -1,6 +1,7 @@
 package site.toeicdoit.api.payment.model;
 
 
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +12,6 @@ import site.toeicdoit.api.common.enums.PaymentStatus;
 
 @Component
 @NoArgsConstructor
-@AllArgsConstructor
 @Data
 @Builder
 @Log4j2
@@ -22,6 +22,16 @@ public class PaymentDto {
     private String paymentUid; // 결제 고유 번호
     private Long userId;
     private String paymentDate;
+
+    @QueryProjection
+    public PaymentDto(Long id, Long amount, PaymentStatus status, String paymentUid, Long userId, String paymentDate) {
+        this.id = id;
+        this.amount = amount;
+        this.status = status;
+        this.paymentUid = paymentUid;
+        this.userId = userId;
+        this.paymentDate = paymentDate;
+    }
 }
 
 

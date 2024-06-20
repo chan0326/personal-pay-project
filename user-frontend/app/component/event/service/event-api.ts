@@ -25,3 +25,16 @@ export const findEventByIdAPI = async (id:number) => {
         return error
     }
 }
+
+export const AddEventAPI = async (event:IEvent) => {
+    try{
+        const response = await instance().post('/calendars/add',event)
+        // java 에서 Messenger.message에 값을 담음
+        console.log(response.data)
+        return response.data
+    } 
+    catch(error){
+        console.log(error)
+        return error
+    }
+}

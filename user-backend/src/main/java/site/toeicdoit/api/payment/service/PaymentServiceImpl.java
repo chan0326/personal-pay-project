@@ -71,7 +71,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentDto> getPaymentByUserId(Long userId) {
-        return paymentRepository.getPaymentByUserId(userId).stream().map(i -> entityToDto(i)).peek(System.out::println).toList();
+        return paymentRepository.getPaymentByUserId(userId).stream().peek(System.out::println).toList();
     }
 
     @Override

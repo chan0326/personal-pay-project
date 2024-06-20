@@ -9,14 +9,22 @@ import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 import { EventSourceInput } from '@fullcalendar/core/index.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { IEvent } from '@/app/component/event/model/event';
-import { SaveEvent, findEventById } from '@/app/component/event/service/event-service';
+import { SaveEvent, findEventById,AddEvent } from '@/app/component/event/service/event-service';
 import { getEventById } from '@/app/component/event/service/event-slice';
 import { NextPage } from 'next';
 
 const CalendarPage: NextPage = ({ params }: any) => {
   const dispatch = useDispatch();
   const getEvent: IEvent[] = useSelector(getEventById);
+// 현재 날짜를 가져옵니다.
 
+  const calendarData = {
+    title: '출석',
+    start: new Date().toISOString(),
+    allDay: true,
+    id: 1,
+    userId: params.id
+  }
   const [events, setEvents] = useState([
     { title: '출석', id: '1' },
     { title: 'event 2', id: '2' },
@@ -35,6 +43,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
   });
 
   useEffect(() => {
+    
     const draggableEl = document.getElementById('draggable-el');
     if (draggableEl && !draggableEl.hasAttribute('data-initialized')) {
       new Draggable(draggableEl, {
@@ -48,6 +57,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
       });
       draggableEl.setAttribute('data-initialized', 'true');
     }
+    dispatch(AddEvent(calendarData))
 
     dispatch(findEventById(params.id))
       .then((data: any) => {

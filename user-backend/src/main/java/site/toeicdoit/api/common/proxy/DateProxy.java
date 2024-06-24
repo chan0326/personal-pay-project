@@ -13,9 +13,18 @@ public class DateProxy {
     public static Supplier<LocalDate> getLocalDate = LocalDate::now;
     public static Supplier<LocalDateTime> getLocalDateTime = LocalDateTime::now;
 
-    public static LocalDate parseDate(String dateStr) {
+    // String을 LocalDate로 변환
+    public static LocalDate toLocalDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        return LocalDate.parse(dateStr, formatter);
+        return LocalDate.parse(dateString, formatter);
+    }
+
+
+
+    // LocalDate를 String으로 변환
+    public static String toString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+        return date.format(formatter);
     }
 
 }

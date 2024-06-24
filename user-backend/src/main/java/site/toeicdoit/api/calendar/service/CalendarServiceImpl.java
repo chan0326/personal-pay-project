@@ -39,16 +39,36 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public MessengerVo add(CalendarDto dto) {
         log.info("CalendarDto save con: {}", dto);
-        // 중복 데이터 확인
-        Optional<CalendarModel> existingCalendar = repo.findByTitleAndStartAndUserId(dto.getTitle(), dto.getStart(), UserModel.builder().id(dto.getUserId()).build());
-        if (existingCalendar.isPresent()) {
-            return MessengerVo.builder()
-                    .message("FAILURE: Already exists")
-                    .build();
+        // String을 LocalDate로 변환
+        LocalDate startDate = DateProxy.toLocalDate(dto.getStart());
+        log.info("startDate: {}", startDate);
+
+        // DB에서 같은 제목, 시작 날짜, 사용자 ID를 가진 모든 일정 데이터를 가져옴
+        List<CalendarModel> existingCalendars = repo.findByTitleAndUserId(dto.getTitle(), UserModel.builder().id(dto.getUserId()).build());
+
+        log.info("existingCalendars: {}", existingCalendars);
+        // 모든 일정 데이터를 반복하면서 중복 여부를 확인
+        for (CalendarModel calendar : existingCalendars) {
+            LocalDate existingStartDate = DateProxy.toLocalDate(calendar.getStart());
+            log.info("existingStartDate: " + existingStartDate.getDayOfMonth());
+            log.info("getDayOfMonth: " + existingStartDate.getMonth());
+
+
+            // 월, 일이 같은 일정이 있는지 확인
+            if (existingStartDate.getMonth() == startDate.getMonth() &&
+                    existingStartDate.getDayOfMonth() == startDate.getDayOfMonth()) {
+                return MessengerVo.builder()
+                        .message("FAILURE: Already exists")
+                        .build();
+
+            }
         }
 
-        // 중복이 아닐 경우 데이터 저장
         repo.save(dtoToEntity(dto));
+
+
+
+
         return MessengerVo.builder()
                 .message("SUCCESS")
                 .build();

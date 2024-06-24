@@ -57,8 +57,6 @@ const CalendarPage: NextPage = ({ params }: any) => {
       });
       draggableEl.setAttribute('data-initialized', 'true');
     }
-    dispatch(AddEvent(calendarData))
-
     dispatch(findEventById(params.id))
       .then((data: any) => {
         if (Array.isArray(data.payload)) {

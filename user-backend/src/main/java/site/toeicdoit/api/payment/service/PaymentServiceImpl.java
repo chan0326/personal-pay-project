@@ -31,27 +31,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    @Value("${iamport.key}")
-    private String restApiKey;
-    @Value("${iamport.secret}")
-    private String restApiSecret;
-
-
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
-    private IamportClient iamportClient;
-
-    public void init() {
-        log.info("API Key: {}", restApiKey);
-        log.info("API Secret: {}", restApiSecret);
-        this.iamportClient = new IamportClient(restApiKey, restApiSecret);
-    }
-
-
-
-
-
-
+    private final IamportClient iamportClient;
 
     @Override
     public MessengerVo save(PaymentDto dto) {
@@ -77,7 +59,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public MessengerVo refundPayment(PaymentDto dto) throws IamportResponseException, IOException {
         log.info(dto.getPaymentUid());
-        init();
         IamportResponse<Payment> response = iamportClient.paymentByImpUid(dto.getPaymentUid());
         //cancelData 생성
         CancelData cancelData = createCancelData(response, Math.toIntExact(dto.getAmount()));

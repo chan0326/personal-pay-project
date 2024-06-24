@@ -20,6 +20,7 @@ export default function UserMyPage({ params }: any) {
         alert("삭제완료");
         userDeleteById(user.id);
     };
+    
 
     const handleShowPayments = () => {
         if (showPayments) {

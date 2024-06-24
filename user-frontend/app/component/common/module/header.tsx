@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { parseCookies, destroyCookie } from 'nookies';
 import { logout } from '../../user/service/user-service';
 import { jwtDecode } from 'jwt-decode';
+import { AddEvent } from '../../event/service/event-service';
 
 function Header() {
   const [showMyPage, setShowMyPage] = useState(false);
@@ -19,6 +20,14 @@ function Header() {
     }
   }, []);
 
+  const calendarData = {
+    title: '출석',
+    start: new Date().toISOString(),
+    allDay: true,
+    id: 1,
+    userId: 1
+  }
+
   const logoutHandler = () => {
     dispatch(logout())
       .then(() => {
@@ -28,7 +37,14 @@ function Header() {
       .catch((err: any) => {
         console.error('로그아웃 에러:', err);
       });
+
   };
+
+  const addHandler = () => {
+    dispatch(AddEvent(calendarData));
+
+
+  }
 
   return (
     <AppBar position="static" color="transparent">
@@ -73,7 +89,7 @@ function Header() {
               <Button color="inherit" href="#">강의실 입장</Button>
               <Button color="inherit" href={`${PG.USER}/detail/${jwtDecode<any>(parseCookies().accessToken).userId}`}>마이페이지</Button>
               <Button color="inherit" href={`${PG.PAYMENT}/${jwtDecode<any>(parseCookies().accessToken).userId}`}>Payment</Button>
-              <Button color="inherit" href={`${PG.Calendar}/${jwtDecode<any>(parseCookies().accessToken).userId}`}>캘린더</Button>
+              <Button color="inherit" onClick={addHandler} href={`${PG.Calendar}/${jwtDecode<any>(parseCookies().accessToken).userId}`}>캘린더</Button>
               <Button color="inherit" onClick={logoutHandler}>Logout</Button>
             </>
           )}

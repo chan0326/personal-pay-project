@@ -33,19 +33,9 @@ import java.util.List;
 public class PaymentController {
     private final PaymentServiceImpl paymentService;
 
-    @Value("${iamport.key}")
-    private String restApiKey;
-    @Value("${iamport.secret}")
-    private String restApiSecret;
+    private final IamportClient iamportClient;
 
-    private IamportClient iamportClient;
 
-    @PostConstruct
-    public void init() {
-        log.info("API Key: {}", restApiKey);
-        log.info("API Secret: {}", restApiSecret);
-        this.iamportClient = new IamportClient(restApiKey, restApiSecret);
-    }
 
     @PostMapping("/verifyIamport/{imp_uid}")
     public ResponseEntity<?> paymentByImpUid(@PathVariable("imp_uid") String imp_uid) throws IamportResponseException, IOException {

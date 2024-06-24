@@ -22,5 +22,5 @@ public interface CalendarRepository extends JpaRepository<CalendarModel, Long> ,
     List<CalendarModel> findByUserId(UserModel userId);
 
 
-    Optional<CalendarModel> findByTitleAndStartAndUserId(String title, String start, UserModel userId);
+    List<CalendarModel> findByTitleAndUserId(String title, UserModel userId);
 }

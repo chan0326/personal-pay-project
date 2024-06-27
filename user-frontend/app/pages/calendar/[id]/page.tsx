@@ -9,22 +9,14 @@ import { CheckIcon, ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 import { EventSourceInput } from '@fullcalendar/core/index.js';
 import { useDispatch, useSelector } from 'react-redux';
 import { IEvent } from '@/app/component/event/model/event';
-import { SaveEvent, findEventById,AddEvent } from '@/app/component/event/service/event-service';
+import { SaveEvent, findEventById } from '@/app/component/event/service/event-service';
 import { getEventById } from '@/app/component/event/service/event-slice';
 import { NextPage } from 'next';
 
 const CalendarPage: NextPage = ({ params }: any) => {
   const dispatch = useDispatch();
   const getEvent: IEvent[] = useSelector(getEventById);
-// 현재 날짜를 가져옵니다.
 
-  const calendarData = {
-    title: '출석',
-    start: new Date().toISOString(),
-    allDay: true,
-    id: 1,
-    userId: params.id
-  }
   const [events, setEvents] = useState([
     { title: '출석', id: '1' },
     { title: 'event 2', id: '2' },
@@ -37,13 +29,13 @@ const CalendarPage: NextPage = ({ params }: any) => {
   const [newEvent, setNewEvent] = useState<IEvent>({
     title: '',
     start: '',
+    end: '', // Initialize end field
     allDay: false,
     id: 0,
     userId: params.id,
   });
 
   useEffect(() => {
-    
     const draggableEl = document.getElementById('draggable-el');
     if (draggableEl && !draggableEl.hasAttribute('data-initialized')) {
       new Draggable(draggableEl, {
@@ -52,7 +44,8 @@ const CalendarPage: NextPage = ({ params }: any) => {
           const title = eventEl.getAttribute('title');
           const id = eventEl.getAttribute('data');
           const start = eventEl.getAttribute('start');
-          return { title, id, start };
+          const end = eventEl.getAttribute('end');
+          return { title, id, start, end };
         },
       });
       draggableEl.setAttribute('data-initialized', 'true');
@@ -60,7 +53,12 @@ const CalendarPage: NextPage = ({ params }: any) => {
     dispatch(findEventById(params.id))
       .then((data: any) => {
         if (Array.isArray(data.payload)) {
-          setAllEvents(data.payload);
+          const eventsWithStart = data.payload.map((event: IEvent) => ({
+            ...event,
+            start: event.startTime ? new Date(event.startTime).toISOString() : '',
+            end: event.endTime ? new Date(event.endTime).toISOString() : '', // Include end time
+          }));
+          setAllEvents(eventsWithStart);
         } else {
           console.error('Error: fetched events are not an array:', data.payload);
         }
@@ -71,7 +69,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
   }, [params.id, dispatch]);
 
   function handleDateClick(arg: { date: Date; allDay: boolean }) {
-    setNewEvent({ ...newEvent, start: arg.date.toISOString(), allDay: arg.allDay, id: new Date().getTime() });
+    setNewEvent({ ...newEvent, start: arg.date.toISOString(),end: arg.date.toISOString(), allDay: arg.allDay, id: new Date().getTime() });
     setShowModal(true);
   }
 
@@ -79,6 +77,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
     const event = {
       ...newEvent,
       start: data.date.toISOString(),
+      end: data.date.toISOString(), // Set end time
       title: data.draggedEl.innerText,
       allDay: data.allDay,
       id: new Date().getTime(),
@@ -102,6 +101,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
     setNewEvent({
       title: '',
       start: '',
+      end: '', // Reset end field
       allDay: false,
       id: 0,
       userId: params.id,
@@ -113,13 +113,21 @@ const CalendarPage: NextPage = ({ params }: any) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setNewEvent({
       ...newEvent,
-      title: e.target.value,
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSave = () => {
-    console.log('allEvents:', allEvents);
-    dispatch(SaveEvent(allEvents))
+    const eventsToSave = allEvents.map(event => ({
+      ...event,
+      startTime: event.start ? new Date(event.start) : undefined,
+      endTime: event.end ? new Date(event.end) : undefined, // Handle end time
+      start: undefined,
+      end: undefined, // Remove start and end fields
+    }));
+
+    console.log('allEvents:', eventsToSave);
+    dispatch(SaveEvent(eventsToSave))
       .then((res: any) => {
         alert('캘린더 저장완료');
         console.log('Saved events:', res);
@@ -136,6 +144,7 @@ const CalendarPage: NextPage = ({ params }: any) => {
     setNewEvent({
       title: '',
       start: '',
+      end: '', // Reset end field
       allDay: false,
       id: 0,
       userId: params.id,
@@ -221,8 +230,9 @@ const CalendarPage: NextPage = ({ params }: any) => {
                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                       <div className="sm:flex sm:items-start">
                         <div
-                          className="mx-auto flex h-12 w-12 flex-shrink-0 items-center 
-                      justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
+                          className="mx-auto flex h-10 w-10 flex-shrink-0 items-center 
+                        justify-center rounded-full bg-red-100 sm:mx-0 
+                        sm:h-10 sm:w-10"
                         >
                           <ExclamationTriangleIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
                         </div>
@@ -339,4 +349,3 @@ const CalendarPage: NextPage = ({ params }: any) => {
 };
 
 export default CalendarPage;
-

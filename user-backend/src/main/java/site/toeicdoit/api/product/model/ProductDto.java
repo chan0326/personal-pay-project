@@ -4,6 +4,8 @@ import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,9 +15,7 @@ import org.springframework.stereotype.Component;
 public class ProductDto {
     private Long id;
     private String name;
-    private Long price;
+    private Integer price;
     private String description;
-    private Long userId;
-    private Long subscribeDate;
-    private String regDate;
+    private Integer duration;
 }

@@ -1,12 +1,12 @@
 
 import {  instance } from "../../common/configs/axios-config";
 import axios from "axios";
-import { IProduct } from "../model/product.model";
+import { ISubcribe } from "../model/subcribe-model";
 
 
-export const paymentproductAPI = async (product:IProduct) => {
+export const ChangeSubscribeAPI = async (subscribe:ISubcribe) => {
     try{
-        const response = await instance().post('/payment/save',product)
+        const response = await instance().post('/subscribe/save',subscribe)
         // java 에서 Messenger.message에 값을 담음
         console.log(response.data)
         return response.data

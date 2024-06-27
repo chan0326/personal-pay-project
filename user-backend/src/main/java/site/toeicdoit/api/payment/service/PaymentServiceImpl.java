@@ -11,6 +11,8 @@ import site.toeicdoit.api.common.component.MessengerVo;
 import site.toeicdoit.api.payment.model.PaymentDto;
 import site.toeicdoit.api.payment.model.PaymentModel;
 import site.toeicdoit.api.payment.repository.PaymentRepository;
+import site.toeicdoit.api.product.model.ProductModel;
+import site.toeicdoit.api.subscribe.repository.SubscribeRepository;
 import site.toeicdoit.api.user.model.UserDto;
 import site.toeicdoit.api.user.model.UserModel;
 import site.toeicdoit.api.user.repository.UserRepository;
@@ -32,28 +34,31 @@ import java.util.List;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final SubscribeRepository subscribeRepository;
     private final UserRepository userRepository;
     private final IamportClient iamportClient;
 
     @Override
     public MessengerVo save(PaymentDto dto) {
-        UserModel user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        if (user.getPoint() == null) {
-            user.setPoint(0L);
-        }
-        user.setPoint(user.getPoint() + dto.getAmount());
-        userRepository.save(user);
-        PaymentModel ent = paymentRepository.save(dtoToEntity(dto));
-        System.out.println(" ============ PaymentServiceImpl save instanceof =========== ");
-        System.out.println((ent instanceof PaymentModel) ? "SUCCESS" : "FAILURE");
+        log.info(dto.getPaymentUid());
+        log.info(dto.getAmount().toString());
+        log.info(dto.getProductId().toString());
+
+        paymentRepository.save(dtoToEntity(dto));
+         Long paymentId = paymentRepository.findIdByPaymentUid(dto.getPaymentUid());
+         log.info(paymentId.toString());
+
         return MessengerVo.builder()
-                .message((ent instanceof PaymentModel) ? "SUCCESS" : "FAILURE")
+                .message("SUCCESS")
+                .paymentId(paymentId)
                 .build();
     }
 
     @Override
     public List<PaymentDto> getPaymentByUserId(Long userId) {
-        return paymentRepository.getPaymentByUserId(userId).stream().peek(System.out::println).toList();
+
+        return paymentRepository.getPaymentByUserId(userId).stream().toList();
+
     }
 
     @Override
@@ -65,8 +70,9 @@ public class PaymentServiceImpl implements PaymentService {
         iamportClient.cancelPaymentByImpUid(cancelData);
         log.info("환불 성공");
         paymentRepository.deleteAllById(Collections.singleton(dto.getId()));
+        subscribeRepository.deleteAllById(Collections.singleton(dto.getSubscribeId()));
+
         UserModel user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-        user.setPoint(user.getPoint() - dto.getAmount());
         userRepository.save(user);
         return MessengerVo.builder()
                 .message("SUCCESS")

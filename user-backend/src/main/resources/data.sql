@@ -1,4 +1,5 @@
 # show tables;
+
 -- insert into boards (id, title, description, reg_date, mod_date) values(1, "Reviews", "수강 후기 게시판", now(), now());
 -- insert into boards (id, title, description, reg_date, mod_date) values(2, "고객센터", "고객 문의 게시판", now(), now());
 -- insert into users (id, username, password, name, phone, job, subscribe, point, reg_date, mod_date)
@@ -133,5 +134,11 @@
 -- insert into articles (id, writer_id, board_id, title, content, reg_date, mod_date ) values (98, 8, 1, 'Revengers Tragedy', 'Structural & Misc Steel Erection', now(), now());
 -- insert into articles (id, writer_id, board_id, title, content, reg_date, mod_date ) values (99, 9, 2, 'Arnold', 'Masonry', now(), now());
 -- insert into articles (id, writer_id, board_id, title, content, reg_date, mod_date ) values (100, 10, 1, 'Return to the 36th Chamber (Shao Lin da peng da shi) ', 'Wall Protection', now(), now());
-
+-- ALTER TABLE subscribes MODIFY COLUMN id INT AUTO_INCREMENT;
+-- insert into products (id, price, name, description)
+-- values (1, 100, '상품1', '상품1' );
+-- insert into products (id, price, name, description)
+-- values (2, 200, '상품1', '상품1' );
+-- insert into products (id, price, name, description)
+-- values (3, 500, '상품1', '상품1' );
 

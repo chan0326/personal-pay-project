@@ -18,6 +18,8 @@ public interface CalendarService extends CommandService<CalendarDto> , QueryServ
                 .allDay(entity.isAllDay())
                 .start(entity.getStart())
                 .userId(entity.getUserId().getId())
+                .startTime(entity.getStartTime())
+                .endTime(entity.getEndTime())
                 .build();
     }
 
@@ -27,9 +29,11 @@ public interface CalendarService extends CommandService<CalendarDto> , QueryServ
                 .allDay(dto.isAllDay())
                 .start(dto.getStart())
                 .userId(UserModel.builder().id(dto.getUserId()).build())
+                .startTime(dto.getStartTime())
+                .endTime(dto.getEndTime())
                 .build();
     }
-    MessengerVo save(List<CalendarDto> calendarDtos);
+    MessengerVo save(List<CalendarDto> calendarDto);
 
     List<CalendarDto> getCalendarByUserId(Long userId);
 

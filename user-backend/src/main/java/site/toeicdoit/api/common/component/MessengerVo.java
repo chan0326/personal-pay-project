@@ -18,4 +18,6 @@ public class MessengerVo {
     private String accessToken;
     private String refreshToken;
     private Long boardId;
+    private Long paymentId;
+    private Long subscribeId;
 }

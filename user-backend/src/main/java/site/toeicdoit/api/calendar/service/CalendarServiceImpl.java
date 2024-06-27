@@ -14,6 +14,7 @@ import site.toeicdoit.api.common.proxy.DateProxy;
 import site.toeicdoit.api.user.model.UserModel;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +28,10 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarRepository repo;
 
     private boolean isDuplicate(CalendarDto dto) {
-        return repo.existsByTitleAndAllDayAndStartAndUserId(
+        return repo.existsByTitleAndAllDayAndStartTimeAndUserId(
                 dto.getTitle(),
                 dto.isAllDay(),
-                dto.getStart(),
+                dto.getStartTime(),
                 UserModel.builder().id(dto.getUserId()).build()
         );
     }
@@ -38,37 +39,35 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Override
     public MessengerVo add(CalendarDto dto) {
-        log.info("CalendarDto save con: {}", dto);
-        // String을 LocalDate로 변환
-        LocalDate startDate = DateProxy.toLocalDate(dto.getStart());
-        log.info("startDate: {}", startDate);
+        log.info("CalendarDto save con12: {}", dto);
 
-        // DB에서 같은 제목, 시작 날짜, 사용자 ID를 가진 모든 일정 데이터를 가져옴
+
+        // DB에서 같은 제목, 사용자 ID를 가진 모든 일정 데이터를 가져옴
         List<CalendarModel> existingCalendars = repo.findByTitleAndUserId(dto.getTitle(), UserModel.builder().id(dto.getUserId()).build());
 
         log.info("existingCalendars: {}", existingCalendars);
+        dto.getStartTime();
         // 모든 일정 데이터를 반복하면서 중복 여부를 확인
-        for (CalendarModel calendar : existingCalendars) {
-            LocalDate existingStartDate = DateProxy.toLocalDate(calendar.getStart());
-            log.info("existingStartDate: " + existingStartDate.getDayOfMonth());
-            log.info("getDayOfMonth: " + existingStartDate.getMonth());
+        // DTO의 startTime에서 월과 일을 추출
+        int dtoMonth = dto.getStartTime().getMonthValue();
+        int dtoDay = dto.getStartTime().getDayOfMonth();
 
+        // 중복 체크를 위한 플래그
+        boolean isDuplicate = existingCalendars.stream()
+                .anyMatch(calendar -> {
+                    int calendarMonth = calendar.getStartTime().getMonthValue();
+                    int calendarDay = calendar.getStartTime().getDayOfMonth();
+                    return calendarMonth == dtoMonth && calendarDay == dtoDay;
+                });
 
-            // 월, 일이 같은 일정이 있는지 확인
-            if (existingStartDate.getMonth() == startDate.getMonth() &&
-                    existingStartDate.getDayOfMonth() == startDate.getDayOfMonth()) {
-                return MessengerVo.builder()
+        if (isDuplicate) {
+            log.info("Duplicate calendar event found. Not saving the event.");
+            return MessengerVo.builder()
                         .message("FAILURE: Already exists")
                         .build();
-
-            }
         }
 
         repo.save(dtoToEntity(dto));
-
-
-
-
         return MessengerVo.builder()
                 .message("SUCCESS")
                 .build();
@@ -76,28 +75,28 @@ public class CalendarServiceImpl implements CalendarService {
 
     @Transactional
     @Override
-    public MessengerVo save(List<CalendarDto> calendarDtos) {
-        log.info("ArticleModel save Impl: {}", calendarDtos);
+    public MessengerVo save(List<CalendarDto> calendarDto) {
+        log.info("ArticleModel save Impl: {}", calendarDto);
 
-        List<CalendarModel> savedModels = calendarDtos.stream()
+        List<CalendarModel> savedModels = calendarDto.stream()
                 .filter(dto -> !isDuplicate(dto))
                 .map(this::dtoToEntity)
                 .map(repo::save)
                 .toList();
 
         // Find all existing models for the user
-        Long userId = calendarDtos.get(0).getUserId();
+        Long userId = calendarDto.get(0).getUserId();
         List<CalendarModel> existingModels = repo.findByUserId(UserModel.builder().id(userId).build());
 
         // Find and delete models that are not in the new list
         existingModels.stream()
-                .filter(existingModel -> calendarDtos.stream()
+                .filter(existingModel -> calendarDto.stream()
                         .noneMatch(dto -> dto.getTitle().equals(existingModel.getTitle())
                                 && dto.isAllDay() == existingModel.isAllDay()
-                                && dto.getStart().equals(existingModel.getStart())))
+                                && dto.getStartTime().equals(existingModel.getStartTime())))
                 .forEach(repo::delete);
 
-        boolean allSuccess = savedModels.size() == calendarDtos.size();
+        boolean allSuccess = savedModels.size() == calendarDto.size();
 
         return MessengerVo.builder()
                 .message(allSuccess ? "SUCCESS" : "FAIL")

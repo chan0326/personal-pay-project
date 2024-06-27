@@ -20,8 +20,6 @@ public interface BoardService extends CommandService<BoardDto>, QueryService<Boa
                 .id(entity.getId())
                 .title(entity.getTitle())
                 .description(entity.getDescription())
-                .regDate(entity.getRegDate().toString())
-                .modDate(entity.getModDate().toString())
                 .build();
     }
     

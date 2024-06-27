@@ -22,7 +22,7 @@ function Header() {
 
   const calendarData = {
     title: '출석',
-    start: new Date().toISOString(),
+    startTime: new Date(),
     allDay: true,
     id: 1,
     userId: 1
@@ -41,6 +41,7 @@ function Header() {
   };
 
   const addHandler = () => {
+    console.log(calendarData.startTime);
     dispatch(AddEvent(calendarData));
 
 

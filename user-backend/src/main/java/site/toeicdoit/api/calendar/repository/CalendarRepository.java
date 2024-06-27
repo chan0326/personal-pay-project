@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import site.toeicdoit.api.calendar.model.CalendarModel;
 import site.toeicdoit.api.user.model.UserModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public interface CalendarRepository extends JpaRepository<CalendarModel, Long> ,
 //    @Query("select c from calendars c where c.userId.id = :userId")
 //    List<CalendarModel> getCalendarByUserId(@Param("userId") UserModel userId);
 
-    boolean existsByTitleAndAllDayAndStartAndUserId(String title, boolean allDay, String start, UserModel userId);
+    boolean existsByTitleAndAllDayAndStartTimeAndUserId(String title, boolean allDay, LocalDateTime startTime, UserModel userId);
 
     List<CalendarModel> findByUserId(UserModel userId);
 

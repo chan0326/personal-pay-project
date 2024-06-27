@@ -4,6 +4,8 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import site.toeicdoit.api.common.component.MessengerVo;
 import site.toeicdoit.api.payment.model.PaymentDto;
 import site.toeicdoit.api.payment.model.PaymentModel;
+import site.toeicdoit.api.product.model.ProductModel;
+import site.toeicdoit.api.subscribe.model.SubscribeModel;
 import site.toeicdoit.api.user.model.UserDto;
 import site.toeicdoit.api.user.model.UserModel;
 
@@ -18,7 +20,10 @@ public interface PaymentService {
                 .amount(dto.getAmount())
                 .paymentUid(dto.getPaymentUid())
                 .userId(UserModel.builder().id(dto.getUserId()).build())
-                .paymentDate(dto.getPaymentDate())
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt())
+                .subscribeId(SubscribeModel.builder().id(dto.getSubscribeId()).build())
+                .productId(ProductModel.builder().id(dto.getProductId()).build())
                 .build();
     }
 
@@ -29,7 +34,6 @@ public interface PaymentService {
                 .amount(entity.getAmount())
                 .paymentUid(entity.getPaymentUid())
                 .userId(entity.getUserId().getId())
-                .paymentDate(entity.getPaymentDate())
                 .build();
     }
 

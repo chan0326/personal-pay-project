@@ -5,6 +5,7 @@ import { getPaymentsById } from "@/app/component/payment/service/payment-slice"
 import { IUser } from "@/app/component/user/model/user"
 import { findUserById, userDeleteById } from "@/app/component/user/service/user-service"
 import { getUserById } from "@/app/component/user/service/user-slice"
+import { Payments } from "@mui/icons-material"
 import { Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
@@ -15,6 +16,17 @@ export default function UserMyPage({ params }: any) {
     const payments: IPayment[] = useSelector(getPaymentsById);
     const [showPayments, setShowPayments] = useState(false);
     const [allEvents, setAllEvents] = useState<IPayment[]>([]);
+
+    payments.map((payment: IPayment) => {
+        if (payment.createdAt) {
+            payment.createdAt = new Date(payment.createdAt); // createdAt이 정의되어 있을 때에만 new Date() 호출
+        }
+        return payment;
+    });
+    
+
+
+    
 
     const handleDelete = () => {
         alert("삭제완료");
@@ -30,6 +42,7 @@ export default function UserMyPage({ params }: any) {
                 .then((data: any) => {
                     if (Array.isArray(data.payload)) {
                         setShowPayments(true);
+                        console.log('data.payload:', data.payload);
                         setAllEvents(data.payload);
                     } else {
                         console.error('Error: fetched events are not an array:', data.payload);
@@ -89,18 +102,20 @@ export default function UserMyPage({ params }: any) {
                 <div>
                     <h3>결제내역</h3>
                     <ul>
-                        {allEvents.map((payment: IPayment) => (
-                            <li key={payment.id}>
-                                <Typography>{payment.paymentDate} - {payment.paymentUid} - {payment.amount}원 
-                                    <button
-                                        onClick={() => handleShowRefundPayments(payment)}
-                                        className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                    >
-                                        환불
-                                    </button>
-                                </Typography>
-                            </li>
-                        ))}
+                    {allEvents.map((payment: IPayment) => (
+    <li key={payment.id}>
+        <Typography>
+        {payment.createdAt ? new Date(payment.createdAt).toLocaleString() : ''} -  {payment.amount}원 - {`상품${payment.productId}`} 
+            <button
+                onClick={() => handleShowRefundPayments(payment)}
+                className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+                환불
+            </button>
+        </Typography>
+    </li>
+))}
+
                     </ul>
                 </div>
             )}

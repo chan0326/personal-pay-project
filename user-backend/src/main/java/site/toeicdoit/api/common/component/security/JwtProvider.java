@@ -1,9 +1,9 @@
 package site.toeicdoit.api.common.component.security;
 
+import io.jsonwebtoken.io.Encoder;
 import site.toeicdoit.api.user.model.UserDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +25,7 @@ public class JwtProvider {
 
     Instant expiredDate = Instant.now().plus(1, ChronoUnit.DAYS);
     public JwtProvider(@Value("${jwt.secret}") String secretKey) {
-        this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.secretKey = Keys.hmacShaKeyFor(Base64.getUrlEncoder().encode(secretKey.getBytes()));
     }
 
     public String createToken(UserDto dto) {
@@ -36,7 +36,6 @@ public class JwtProvider {
                 .claim("username", dto.getUsername())
                 .claim("job", dto.getJob())
                 .claim("userId", dto.getId())
-                .claim("subscribe", dto.getSubscribe())
                 .compact();
         log.info("createToken: " + accessToken);
 

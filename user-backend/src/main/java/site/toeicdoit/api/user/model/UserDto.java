@@ -22,7 +22,5 @@ public class UserDto {
     private String regDate;
     private String modDate;
     private String token;
-    private Long point;
-    private Long subscribe;
     private String email;
 }

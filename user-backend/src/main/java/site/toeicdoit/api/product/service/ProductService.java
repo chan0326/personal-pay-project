@@ -10,12 +10,10 @@ public interface ProductService {
     default ProductModel dtoToEntity(ProductDto dto) {
         return ProductModel.builder()
                 .id(dto.getId())
-                .regDate(dto.getRegDate())
                 .name(dto.getName())
                 .price(dto.getPrice())
                 .description(dto.getDescription())
-                .userId(dto.getUserId())
-                .subscribeDate(dto.getSubscribeDate())
+                .duration(dto.getDuration())
                 .build();
     }
 

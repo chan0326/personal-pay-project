@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 public interface ProductRepository extends JpaRepository<ProductModel, Long> {
 
 
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE products p SET p.subscribeDate = p.subscribeDate - 1 WHERE p.subscribeDate IS NOT NULL  " )
-    void decrementSubscribeDate();
-
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE products p SET p.subscribeDate = 0 WHERE p.subscribeDate < 0 " )
-    void UpdateSubscribeDate();
+//    @Modifying
+//    @Transactional
+//    @Query(value = "UPDATE products p SET p.subscribeDate = p.subscribeDate - 1 WHERE p.subscribeDate IS NOT NULL  " )
+//    void decrementSubscribeDate();
+//
+//
+//    @Modifying
+//    @Transactional
+//    @Query(value = "UPDATE products p SET p.subscribeDate = 0 WHERE p.subscribeDate < 0 " )
+//    void UpdateSubscribeDate();
 }

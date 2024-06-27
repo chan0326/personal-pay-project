@@ -25,44 +25,11 @@ import static java.time.LocalTime.now;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
-    private final PaymentRepository paymentRepository;
-    private final UserRepository userRepository;
     @Override
     public MessengerVo payment(ProductDto dto) {
-        Long userId = dto.getUserId();
-        Long price = dto.getPrice();
-        Long subscribe = dto.getSubscribeDate();
-        String regDate = now().toString();
-        dto.setRegDate(regDate);
-        log.info(subscribe.toString());
-
-        UserModel user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user.getPoint() < price) {
-            return MessengerVo.builder()
-                    .message("포인트가 부족합니다.")
-                    .build();
-        }
-
-        user.setPoint(user.getPoint() - price);
-        dto.setPrice(user.getPoint());
-        user.setSubscribe(user.getSubscribe() == null ? 0L : user.getSubscribe() + subscribe);
         productRepository.save(dtoToEntity(dto));
-        userRepository.save(user);
         return MessengerVo.builder()
                 .message("상품결제 성공")
                 .build();
     }
-    @Transactional
-    @Async
-    @Scheduled(cron = "0 0 19  * * *")
-    public void updateSubscribeDates() {
-
-        productRepository.UpdateSubscribeDate();
-        productRepository.decrementSubscribeDate();
-
-    }
-
-
 }

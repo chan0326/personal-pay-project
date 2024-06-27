@@ -2,6 +2,12 @@ package site.toeicdoit.api.product.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import site.toeicdoit.api.common.model.BaseEntity;
+import site.toeicdoit.api.payment.model.PaymentModel;
+import site.toeicdoit.api.subscribe.model.SubscribeModel;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "products")
 @Getter
@@ -9,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString(exclude = "id")
-public class ProductModel {
+public class ProductModel extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name ="id", nullable = false)
@@ -17,11 +23,14 @@ public class ProductModel {
     @Setter
     private String name;
     @Setter
-    private Long price;
+    private Integer price;
     @Setter
     private String description;
-    private Long userId;
-    private Long subscribeDate;
-    private String regDate;
+    @Setter
+    private Integer duration;
+
+    @OneToMany(mappedBy = "productId", fetch = FetchType.LAZY)
+    private List<PaymentModel> paymentIds;
+
 
 }

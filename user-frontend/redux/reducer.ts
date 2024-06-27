@@ -6,7 +6,9 @@ import boardReducer from "@/app/component/board/service/board-slice";
 import userReducer from "@/app/component/user/service/user-slice";
 import eventReducer from "@/app/component/event/service/event-slice";
 import paymentReducer from "@/app/component/payment/service/payment-slice";
+import subcribeReducer from "@/app/component/subcribe/service/subcribe-slice";
 import createWebStorage from "redux-persist/lib/storage/createWebStorage";
+
 
 
 const createNoopStorage = () => {
@@ -61,6 +63,11 @@ const paymentPersistConfig = {
   whitelist: ["paymentState"],
 
 };
+const subcribePersistConfig = {
+  key: "subcribe",
+  storage,
+  whitelist: ["subcribeState"],
+};
 
 const persistedCountReducer = persistReducer(countPersistConfig, countReducer);
 const persistedArticleReducer = persistReducer(articlePersistConfig, articleReducer);
@@ -68,6 +75,7 @@ const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
 const persistedBoardReducer = persistReducer(boardPersistConfig, boardReducer);
 const persistedEventReducer = persistReducer(eventPersistConfig, eventReducer);
 const persistedPaymentReducer = persistReducer(paymentPersistConfig, paymentReducer);
+const persistedSubcribeReducer = persistReducer(subcribePersistConfig, subcribeReducer);
 
 
 export const rootReducer = combineReducers({
@@ -77,6 +85,7 @@ export const rootReducer = combineReducers({
   board: persistedBoardReducer,
   event: persistedEventReducer,
   payment: persistedPaymentReducer,
+  subcribe: persistedSubcribeReducer,
 });
 
 
